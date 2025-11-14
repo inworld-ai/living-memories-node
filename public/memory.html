@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Companion - Inworld AI</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Top Navigation -->
+    <nav class="top-tab-navigation">
+        <div class="tab-container">
+            <a href="/lipsync" class="tab-btn">LipSync Generation</a>
+            <a href="/memory" class="tab-btn active">Memory Companion</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Memory Page Header -->
+        <header class="page-header">
+            <h1>Memory Companion</h1>
+            <p>Generate animations and chat with AI using voice interaction</p>
+        </header>
+        
+        <!-- Configuration Section -->
+        <section class="config-section">
+            <h2>Step 1: Configuration</h2>
+            <div class="config-row">
+                <div class="config-field">
+                    <label for="memoryApiKeyInput">Inworld API Key:</label>
+                    <input type="password" id="memoryApiKeyInput" placeholder="Enter your Inworld API key..." class="config-input">
+                    <button type="button" id="toggleMemoryApiKey" class="toggle-btn">👁️</button>
+                </div>
+                <div class="config-field">
+                    <label for="memoryVoiceIdInput">Voice ID:</label>
+                    <input type="text" id="memoryVoiceIdInput" placeholder="Enter Inworld voice ID..." class="config-input">
+                </div>
+                <div class="config-field">
+                    <button id="validateMemoryConfig" class="btn btn-success btn-medium">Validate Inworld Config</button>
+                </div>
+            </div>
+            <div class="config-row">
+                <div class="config-field">
+                    <label for="memoryRunwayTokenInput">Runway API Key:</label>
+                    <input type="password" id="memoryRunwayTokenInput" placeholder="Enter your Runway API key..." class="config-input">
+                    <button type="button" id="toggleMemoryRunwayToken" class="toggle-btn">👁️</button>
+                </div>
+            </div>
+            <div class="config-status" id="memoryConfigStatus"></div>
+        </section>
+
+        <!-- Animation Creation Interface (Initially Disabled) -->
+        <div id="memoryPanels" class="creation-panels disabled">
+            <div class="workflow-layout">
+                <!-- Left Column: Animation Creation -->
+                <div class="creation-column">
+                    <!-- Step 2: Upload Image & Generate Animation -->
+                    <section class="animation-creation-section workflow-step">
+                        <h3>Step 2: Create Animation</h3>
+                        <div class="upload-area" id="memoryUploadArea">
+                            <div class="upload-content">
+                                <div class="upload-icon">📁</div>
+                                <p>Drag & drop or click to upload image</p>
+                                <input type="file" id="memoryImageInput" accept="image/*" hidden>
+                            </div>
+                            <div class="image-preview" id="memoryImagePreview" style="display: none;">
+                                <img id="memoryPreviewImg" src="" alt="Preview">
+                                <button class="remove-btn" id="removeMemoryImage">×</button>
+                            </div>
+                        </div>
+                        <div class="upload-status" id="memoryUploadStatus"></div>
+                        
+                        <div class="prompt-input-group">
+                            <label for="animationPrompt">Animation Prompt & Description:</label>
+                            <textarea id="animationPrompt" placeholder="Stay faithful to the image; do not invent new objects, text, or people. Camera: static tripod, eye-level (or match the original), no pans/zooms. 
+
+If a person is present: preserve identity, age, hair, skin tone, and clothing exactly. Allow only subtle micro-movements: soft blink, tiny eye saccades, slight head tilt, calm breathing; if hair is visible, a faint breeze. No makeup or wardrobe changes.
+
+If no person is in the image: animate only gentle environmental cues: slight light shift, soft bokeh drift, leaves/curtain barely swaying, reflections flicker, shadows breathing, minimal parallax.
+
+Look: shallow depth of field with the main subject crisp. Mood: quiet memory fragment, understated, not dramatic. Grade: warm vintage/sepia (yellowed-newspaper) tint, mild fade, light film grain, soft vignette. No logos or added props." rows="8"></textarea>
+                        </div>
+                        
+                        <button id="generateAnimation" class="btn btn-success" disabled>Generate Animation</button>
+                    </section>
+                </div>
+
+                <!-- Right Column: Video Player & Chat -->
+                <div class="video-column">
+                    <!-- Step 3: Video Player & Voice Chat -->
+                    <section class="video-chat-section">
+                        <h3>Step 3: Animation & Voice Chat</h3>
+                        <div class="video-stage">
+                            <div class="video-content" id="memoryVideoContent">
+                                <div class="placeholder-content">
+                                    <div class="video-icon">🎬</div>
+                                    <p>Your generated animation will appear here</p>
+                                    <div class="workflow-status" id="memoryWorkflowStatus">
+                                        <div class="status-item" id="memoryImageStatus">Upload Image</div>
+                                        <div class="status-item" id="memoryAnimationStatus">Generate Animation</div>
+                                        <div class="status-item" id="memoryChatStatus">Start Voice Chat</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                                <div class="chat-controls" id="memoryChatControls" style="display: none;">
+                                    <button id="startVoiceChat" class="btn btn-success voice-record-btn">Press & Hold to Record</button>
+                                    <div class="chat-status" id="chatStatus"></div>
+                                </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Powered by <a href="https://docs.inworld.ai/" target="_blank">Inworld AI Runtime SDK</a></p>
+        </footer>
+    </div>
+
+    <script src="memory.js"></script>
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inworld LipSync Studio</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Top Navigation -->
+    <nav class="top-tab-navigation">
+        <div class="tab-container">
+            <a href="/lipsync" class="tab-btn active" data-tab="lipsync">LipSync Generation</a>
+            <a href="/memory" class="tab-btn" data-tab="memory">Memory Companion</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- LipSync Page Header -->
+        <header class="page-header">
+            <h1>Inworld LipSync Studio</h1>
+            <p>Create AI-powered lip-sync videos with voice and animation</p>
+        </header>
+        
+        <!-- Configuration Section -->
+        <section class="config-section">
+            <h2>Step 1: Configuration</h2>
+            <div class="config-row">
+                <div class="config-field">
+                    <label for="apiKeyInput">Inworld API Key:</label>
+                    <input type="password" id="apiKeyInput" placeholder="Enter your Inworld API key..." class="config-input">
+                    <button type="button" id="toggleApiKey" class="toggle-btn">👁️</button>
+                </div>
+                <div class="config-field">
+                    <label for="voiceIdInput">Voice ID:</label>
+                    <input type="text" id="voiceIdInput" placeholder="Enter Inworld voice ID..." class="config-input">
+                </div>
+                <div class="config-field">
+                    <button id="validateConfig" class="btn btn-success btn-medium">Validate Inworld Config</button>
+                </div>
+            </div>
+            <div class="config-row">
+                <div class="config-field">
+                    <label for="useapiTokenInput">UseAPI Token:</label>
+                    <input type="password" id="useapiTokenInput" placeholder="Enter your UseAPI token..." class="config-input">
+                    <button type="button" id="toggleUseapiToken" class="toggle-btn">👁️</button>
+                </div>
+                <div class="config-field">
+                    <label for="runwayEmailInput">Runway Email:</label>
+                    <input type="email" id="runwayEmailInput" placeholder="Runway account email" class="config-input">
+                </div>
+            </div>
+            <div class="config-status" id="configStatus"></div>
+        </section>
+
+        <!-- Creation Panels (Initially Disabled) -->
+        <div id="creationPanels" class="creation-panels disabled">
+            <div class="workflow-layout">
+                <!-- Step 2: Content Creation -->
+                <div class="creation-column">
+                    <!-- Image Upload Section -->
+                    <section class="upload-section workflow-step">
+                        <h3>Step 2: Upload Image</h3>
+                        <div class="upload-area" id="uploadArea">
+                            <div class="upload-content">
+                                <div class="upload-icon">📁</div>
+                                <p>Drag & drop or click to upload image</p>
+                                <input type="file" id="imageInput" accept="image/*" hidden>
+                            </div>
+                            <div class="image-preview" id="imagePreview" style="display: none;">
+                                <img id="previewImg" src="" alt="Preview">
+                                <button class="remove-btn" id="removeImage">×</button>
+                            </div>
+                        </div>
+                        <div class="upload-status" id="uploadStatus"></div>
+                    </section>
+
+                    <!-- TTS Input Section -->
+                    <section class="tts-section workflow-step">
+                        <h3>Step 3: Generate TTS</h3>
+                        <div class="input-group">
+                            <textarea id="ttsInput" placeholder="Enter text for TTS generation..." rows="4"></textarea>
+                        </div>
+                        <div class="tts-controls">
+                            <button id="processTTS" class="btn btn-success">
+                                <span class="btn-text">Generate TTS</span>
+                                <div class="spinner" style="display: none;"></div>
+                            </button>
+                        </div>
+                        <div class="tts-output" id="ttsOutput" style="display: none;">
+                            <div class="processed-text" id="processedText"></div>
+                            <div class="tts-actions">
+                                <button id="speakText" class="btn btn-success">🔊 Listen</button>
+                                <button id="generateLipSync" class="btn btn-success" disabled>Generate LipSync Video</button>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Step 4: Video Player (Highlighted) -->
+                <div class="video-column">
+                    <section class="video-player-section">
+                        <h3>Step 4: LipSync Video Player</h3>
+                        <div class="video-stage">
+                            <div class="video-content" id="videoContent">
+                                <div class="placeholder-content">
+                                    <div class="video-icon">🎥</div>
+                                    <p>Your LipSync video will appear here</p>
+                                    <div class="workflow-status" id="workflowStatus">
+                                        <div class="status-item" id="imageStatus">Upload Image</div>
+                                        <div class="status-item" id="ttsStatus">Generate TTS</div>
+                                        <div class="status-item" id="videoStatus">Generate Video</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="video-controls" id="videoControls" style="display: none;">
+                            <button id="downloadVideo" class="btn btn-success">📥 Download Video</button>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Powered by <a href="https://docs.inworld.ai/" target="_blank">Inworld AI Runtime SDK</a></p>
+        </footer>
+    </div>
+
+    <script src="lipsync.js"></script>
+</body>
+</html>
