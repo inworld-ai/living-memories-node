@@ -42,7 +42,7 @@ function initializeMemoryCompanion() {
         toggleMemoryApiKeyBtn.addEventListener('click', () => {
             const isPassword = memoryApiKeyInput.type === 'password';
             memoryApiKeyInput.type = isPassword ? 'text' : 'password';
-            toggleMemoryApiKeyBtn.textContent = isPassword ? '🙈' : '👁️';
+            toggleMemoryApiKeyBtn.textContent = isPassword ? 'Hide' : 'Show';
         });
     }
     
@@ -50,7 +50,7 @@ function initializeMemoryCompanion() {
         toggleMemoryRunwayTokenBtn.addEventListener('click', () => {
             const isPassword = memoryRunwayTokenInput.type === 'password';
             memoryRunwayTokenInput.type = isPassword ? 'text' : 'password';
-            toggleMemoryRunwayTokenBtn.textContent = isPassword ? '🙈' : '👁️';
+            toggleMemoryRunwayTokenBtn.textContent = isPassword ? 'Hide' : 'Show';
         });
     }
     
@@ -135,18 +135,18 @@ async function validateMemoryConfiguration() {
     const voiceId = memoryVoiceIdInput?.value.trim();
     
     if (!apiKey) {
-        showMemoryConfigStatus('❌ API Key is required', 'error');
+        showMemoryConfigStatus('API Key is required', 'error');
         return;
     }
     
     if (!voiceId || voiceId.length < 3) {
-        showMemoryConfigStatus('❌ Voice ID is required', 'error');
+        showMemoryConfigStatus('Voice ID is required', 'error');
         return;
     }
     
     validateMemoryConfigBtn.disabled = true;
-    validateMemoryConfigBtn.textContent = '⏳ Validating...';
-    showMemoryConfigStatus('🔍 Validating Inworld configuration...', 'info');
+    validateMemoryConfigBtn.textContent = 'Validating...';
+    showMemoryConfigStatus('Validating Inworld configuration...', 'info');
     
     try {
         // Test the API key and Voice ID with a simple chat request
@@ -165,19 +165,19 @@ async function validateMemoryConfiguration() {
         const data = await response.json();
         
         if (data.success) {
-            showMemoryConfigStatus('✅ Inworld configuration validated successfully!', 'success');
+            showMemoryConfigStatus('Inworld configuration validated successfully!', 'success');
             activateMemoryPanels();
             updateMemoryWorkflowStatus('image', 'active');
         } else {
             const shortError = getShortErrorMessage(data.error);
-            showMemoryConfigStatus(`❌ Validation failed: ${shortError}`, 'error');
+            showMemoryConfigStatus(`Validation failed: ${shortError}`, 'error');
             validateMemoryConfigBtn.disabled = false;
             validateMemoryConfigBtn.textContent = 'Validate Inworld Config';
         }
     } catch (error) {
         console.error('Memory validation error:', error);
         const shortError = getShortErrorMessage(error.message || 'Network error');
-        showMemoryConfigStatus(`❌ Validation failed: ${shortError}`, 'error');
+        showMemoryConfigStatus(`Validation failed: ${shortError}`, 'error');
         validateMemoryConfigBtn.disabled = false;
         validateMemoryConfigBtn.textContent = 'Validate Inworld Config';
     }
@@ -234,10 +234,10 @@ function updateMemoryWorkflowStatus(step, status) {
     const statusElement = document.getElementById(`memory${step.charAt(0).toUpperCase() + step.slice(1)}Status`);
     if (statusElement) {
         const icons = {
-            pending: '⏳',
-            active: '🔄',
-            completed: '✅',
-            error: '❌'
+            pending: '[Pending]',
+            active: '[Active]',
+            completed: '[Completed]',
+            error: '[Error]'
         };
         
         const messages = {
@@ -354,17 +354,17 @@ function uploadMemoryImageToServer(file) {
     .then(data => {
         if (data.success) {
             memoryUploadedImage = data;
-            showMemoryUploadStatus(`✅ Image uploaded: ${data.originalName}`, 'success');
+            showMemoryUploadStatus(`Image uploaded: ${data.originalName}`, 'success');
             updateMemoryWorkflowStatus('image', 'completed');
             updateMemoryWorkflowStatus('animation', 'active');
             updateGenerateAnimationButton();
         } else {
-            showMemoryUploadStatus(`❌ Upload failed: ${data.error}`, 'error');
+            showMemoryUploadStatus(`Upload failed: ${data.error}`, 'error');
         }
     })
     .catch(error => {
         console.error('Upload error:', error);
-        showMemoryUploadStatus('❌ Upload failed: Network error', 'error');
+        showMemoryUploadStatus('Upload failed: Network error', 'error');
     });
 }
 
@@ -400,13 +400,13 @@ function updateGenerateAnimationButton() {
 
 async function generateAnimation() {
     if (!memoryUploadedImage) {
-        showNotification('❌ Please upload an image first', 'error');
+        showNotification('Please upload an image first', 'error');
         return;
     }
     
     const runwayApiKey = memoryRunwayTokenInput?.value.trim();
     if (!runwayApiKey) {
-        showNotification('❌ Please enter Runway API key', 'error');
+        showNotification('Please enter Runway API key', 'error');
         return;
     }
     
@@ -416,7 +416,7 @@ async function generateAnimation() {
     const finalPrompt = userPrompt || defaultPrompt;
     
     generateAnimationBtn.disabled = true;
-    generateAnimationBtn.textContent = '⏳ Generating Animation...';
+    generateAnimationBtn.textContent = 'Generating Animation...';
     updateMemoryWorkflowStatus('animation', 'active');
     
     try {
@@ -438,7 +438,7 @@ async function generateAnimation() {
             displayMemoryAnimation(data.videoUrl);
             updateMemoryWorkflowStatus('animation', 'completed');
             updateMemoryWorkflowStatus('chat', 'active');
-            showNotification('✅ Animation generated successfully!', 'success');
+            showNotification('Animation generated successfully!', 'success');
             
             // Automatically move to Step 3
             if (memoryChatControls) {
@@ -446,14 +446,14 @@ async function generateAnimation() {
             }
         } else {
             const shortError = getShortErrorMessage(data.error);
-            showNotification(`❌ Animation generation failed: ${shortError}`, 'error');
-            updateMemoryWorkflowStatus('animation', 'error', `❌ ${shortError}`);
+            showNotification(`Animation generation failed: ${shortError}`, 'error');
+            updateMemoryWorkflowStatus('animation', 'error', `${shortError}`);
         }
     } catch (error) {
         console.error('Animation generation error:', error);
         const shortError = getShortErrorMessage(error.message || 'Network error');
-        showNotification(`❌ Animation generation failed: ${shortError}`, 'error');
-        updateMemoryWorkflowStatus('animation', 'error', `❌ ${shortError}`);
+        showNotification(`Animation generation failed: ${shortError}`, 'error');
+        updateMemoryWorkflowStatus('animation', 'error', `${shortError}`);
     } finally {
         generateAnimationBtn.disabled = false;
         generateAnimationBtn.textContent = 'Generate Animation';
@@ -487,7 +487,7 @@ function startVoiceChat() {
     stopCurrentTTSAudio();
     
     console.log('Starting voice recording...');
-    showChatStatus('🎤 Recording... Release to send', 'listening');
+    showChatStatus('Recording... Release to send', 'listening');
     
     // Enhanced audio constraints for better recording quality
     const audioConstraints = {
@@ -532,7 +532,7 @@ function startVoiceChat() {
                 
                 if (audioBlob.size === 0) {
                     console.error('Empty audio blob - recording failed');
-                    showChatStatus('❌ Recording failed - no audio captured', 'error');
+                    showChatStatus('Recording failed - no audio captured', 'error');
                     resetVoiceChatButton();
                     return;
                 }
@@ -545,14 +545,14 @@ function startVoiceChat() {
             
             mediaRecorder.onerror = (event) => {
                 console.error('MediaRecorder error:', event.error);
-                showChatStatus('❌ Recording error occurred', 'error');
+                showChatStatus('Recording error occurred', 'error');
                 resetVoiceChatButton();
             };
             
             mediaRecorder.start(100); // Collect data every 100ms for better responsiveness
             isRecording = true;
             
-            startVoiceChatBtn.textContent = '🔴 Recording...';
+            startVoiceChatBtn.textContent = 'Recording...';
             startVoiceChatBtn.style.background = '#dc2626';
             startVoiceChatBtn.classList.add('recording');
             
@@ -560,14 +560,14 @@ function startVoiceChat() {
         })
         .catch(error => {
             console.error('Microphone access error:', error);
-            let errorMessage = '❌ Microphone access denied';
+            let errorMessage = 'Microphone access denied';
             
             if (error.name === 'NotFoundError') {
-                errorMessage = '❌ No microphone found';
+                errorMessage = 'No microphone found';
             } else if (error.name === 'NotAllowedError') {
-                errorMessage = '❌ Microphone permission denied';
+                errorMessage = 'Microphone permission denied';
             } else if (error.name === 'NotReadableError') {
-                errorMessage = '❌ Microphone in use by another application';
+                errorMessage = 'Microphone in use by another application';
             }
             
             showChatStatus(errorMessage, 'error');
@@ -582,7 +582,7 @@ function stopVoiceChat() {
     mediaRecorder.stop();
     isRecording = false;
     
-    startVoiceChatBtn.textContent = '🎤 Press & Hold to Record';
+    startVoiceChatBtn.textContent = 'Press & Hold to Record';
     startVoiceChatBtn.style.background = '';
     startVoiceChatBtn.classList.remove('recording');
     showChatStatus('Processing your voice...', 'active');
@@ -590,28 +590,28 @@ function stopVoiceChat() {
 
 async function processVoiceInput(audioBlob) {
     try {
-        console.log('🎤 Starting voice processing...');
+        console.log('Starting voice processing...');
         showChatStatus('Processing voice through Inworld pipeline...', 'active');
         
         // Convert audio blob to proper PCM format for Inworld STT
-        console.log('📊 Audio blob type:', audioBlob.type, 'size:', audioBlob.size, 'bytes');
+        console.log('Audio blob type:', audioBlob.type, 'size:', audioBlob.size, 'bytes');
         
         if (audioBlob.size === 0) {
             throw new Error('Empty audio blob - no audio data recorded');
         }
         
         const audioBuffer = await audioBlob.arrayBuffer();
-        console.log('📦 Audio buffer size:', audioBuffer.byteLength, 'bytes');
+        console.log('Audio buffer size:', audioBuffer.byteLength, 'bytes');
         
         if (audioBuffer.byteLength === 0) {
             throw new Error('Empty audio buffer - audio conversion failed');
         }
         
         // Convert to 16-bit PCM audio data
-        console.log('🔄 Creating audio context...');
+        console.log('Creating audio context...');
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
         
-        console.log('🔄 Decoding audio data...');
+        console.log('Decoding audio data...');
         let decodedAudio;
         try {
             decodedAudio = await audioContext.decodeAudioData(audioBuffer.slice(0));
@@ -622,7 +622,7 @@ async function processVoiceInput(audioBlob) {
         
         // Get audio samples and resample to 16kHz for STT
         const originalSamples = decodedAudio.getChannelData(0);
-        console.log('✅ Decoded audio samples:', originalSamples.length, 'at', decodedAudio.sampleRate, 'Hz');
+        console.log('Decoded audio samples:', originalSamples.length, 'at', decodedAudio.sampleRate, 'Hz');
         // Find min/max without using spread operator to avoid stack overflow
         let minSample = originalSamples[0];
         let maxSample = originalSamples[0];
@@ -630,20 +630,20 @@ async function processVoiceInput(audioBlob) {
             if (originalSamples[i] < minSample) minSample = originalSamples[i];
             if (originalSamples[i] > maxSample) maxSample = originalSamples[i];
         }
-        console.log('📈 Audio range:', minSample.toFixed(4), 'to', maxSample.toFixed(4));
+        console.log('Audio range:', minSample.toFixed(4), 'to', maxSample.toFixed(4));
         
         // Resample to 16kHz for STT (if needed)
         let audioSamples = originalSamples;
         let targetSampleRate = 16000;
         
         if (decodedAudio.sampleRate !== 16000) {
-            console.log('🔄 Resampling from', decodedAudio.sampleRate, 'Hz to 16000 Hz...');
+            console.log('Resampling from', decodedAudio.sampleRate, 'Hz to 16000 Hz...');
             audioSamples = resampleAudio(originalSamples, decodedAudio.sampleRate, 16000);
-            console.log('✅ Resampled to:', audioSamples.length, 'samples at 16kHz');
+            console.log('Resampled to:', audioSamples.length, 'samples at 16kHz');
         }
         
         // Convert to base64 for transmission (avoid stack overflow)
-        console.log('🔄 Converting to base64...');
+        console.log('Converting to base64...');
         const audioBytes = new Uint8Array(audioSamples.buffer);
         let binaryString = '';
         
@@ -655,12 +655,12 @@ async function processVoiceInput(audioBlob) {
         }
         
         const audioBase64 = btoa(binaryString);
-        console.log('📤 Base64 audio size:', audioBase64.length, 'characters');
+        console.log('Base64 audio size:', audioBase64.length, 'characters');
         
         const apiKey = memoryApiKeyInput?.value.trim();
         const voiceId = memoryVoiceIdInput?.value.trim();
         
-        console.log('🚀 Sending audio to Inworld STT→LLM→TTS pipeline...');
+        console.log('Sending audio to Inworld STT→LLM→TTS pipeline...');
         
         // Send audio directly to Inworld voice agent pipeline
         const response = await fetch('/voice-chat', {
@@ -677,14 +677,14 @@ async function processVoiceInput(audioBlob) {
             })
         });
         
-        console.log('📡 Fetch request sent, waiting for response...');
+        console.log('Fetch request sent, waiting for response...');
         
         if (!response.ok) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
         
         const data = await response.json();
-        console.log('📥 Response received:', data.success ? 'SUCCESS' : 'FAILED');
+        console.log('Response received:', data.success ? 'SUCCESS' : 'FAILED');
         
         if (data.success) {
             // Display and log STT result for debugging
@@ -831,7 +831,7 @@ function stopCurrentTTSAudio() {
     if (currentAudioSource) {
         try {
             currentAudioSource.stop();
-            console.log('🛑 Stopped current TTS audio');
+            console.log('Stopped current TTS audio');
         } catch (e) {
             console.log('TTS audio already stopped or invalid');
         }
@@ -842,7 +842,7 @@ function stopCurrentTTSAudio() {
     if (currentAudioContext && currentAudioContext.state !== 'closed') {
         try {
             currentAudioContext.close();
-            console.log('🔇 Closed TTS audio context');
+            console.log('Closed TTS audio context');
         } catch (e) {
             console.log('TTS audio context already closed');
         }
@@ -852,7 +852,7 @@ function stopCurrentTTSAudio() {
 
 function resetVoiceChatButton() {
     if (startVoiceChatBtn) {
-        startVoiceChatBtn.textContent = '🎤 Press & Hold to Record';
+        startVoiceChatBtn.textContent = 'Press & Hold to Record';
         startVoiceChatBtn.style.background = '';
         startVoiceChatBtn.classList.remove('recording');
     }

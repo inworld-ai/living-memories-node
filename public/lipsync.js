@@ -68,13 +68,13 @@ function initializeEventListeners() {
 function toggleApiKeyVisibility() {
     const isPassword = apiKeyInput.type === 'password';
     apiKeyInput.type = isPassword ? 'text' : 'password';
-    toggleApiKeyBtn.textContent = isPassword ? '🙈' : '👁️';
+    toggleApiKeyBtn.textContent = isPassword ? 'Hide' : 'Show';
 }
 
 function toggleUseapiTokenVisibility() {
     const isPassword = useapiTokenInput.type === 'password';
     useapiTokenInput.type = isPassword ? 'text' : 'password';
-    toggleUseapiTokenBtn.textContent = isPassword ? '🙈' : '👁️';
+    toggleUseapiTokenBtn.textContent = isPassword ? 'Hide' : 'Show';
 }
 
 function updateValidateButton() {
@@ -96,24 +96,24 @@ async function validateAndActivatePanels() {
     const voiceId = voiceIdInput.value.trim();
     
     if (!apiKey) {
-        showConfigStatus('❌ API Key is required', 'error');
+        showConfigStatus('API Key is required', 'error');
         return;
     }
     
     if (apiKey.length < 10) {
-        showConfigStatus('❌ API Key seems too short', 'error');
+        showConfigStatus('API Key seems too short', 'error');
         return;
     }
     
     if (!voiceId || voiceId.length < 3) {
-        showConfigStatus('❌ Voice ID is required', 'error');
+        showConfigStatus('Voice ID is required', 'error');
         return;
     }
     
     // Show loading state
     validateConfigBtn.disabled = true;
-    validateConfigBtn.textContent = '⏳ Validating...';
-    showConfigStatus('🔍 Validating configuration...', 'info');
+    validateConfigBtn.textContent = 'Validating...';
+    showConfigStatus('Validating configuration...', 'info');
     
     try {
         // Test the API key by making a simple TTS request
@@ -132,12 +132,12 @@ async function validateAndActivatePanels() {
         const data = await response.json();
         
         if (data.success) {
-            showConfigStatus('✅ Configuration validated successfully!', 'success');
+            showConfigStatus('Configuration validated successfully!', 'success');
             activateCreationPanels();
             updateWorkflowStatus('image', 'active');
         } else {
             const shortError = getShortErrorMessage(data.error);
-            showConfigStatus(`❌ Validation failed: ${shortError}`, 'error');
+            showConfigStatus(`Validation failed: ${shortError}`, 'error');
             deactivateCreationPanels();
             validateConfigBtn.disabled = false;
             validateConfigBtn.textContent = 'Validate Inworld Config';
@@ -145,7 +145,7 @@ async function validateAndActivatePanels() {
     } catch (error) {
         console.error('Validation error:', error);
         const shortError = getShortErrorMessage(error.message || 'Network error');
-        showConfigStatus(`❌ Validation failed: ${shortError}`, 'error');
+        showConfigStatus(`Validation failed: ${shortError}`, 'error');
         deactivateCreationPanels();
         validateConfigBtn.disabled = false;
         validateConfigBtn.textContent = 'Validate Inworld Config';
@@ -153,14 +153,14 @@ async function validateAndActivatePanels() {
 }
 
 function activateCreationPanels() {
-    console.log('🔓 Activating creation panels');
+    console.log('Activating creation panels');
     creationPanels.classList.remove('disabled');
-    validateConfigBtn.textContent = '✅ Configuration Valid';
+    validateConfigBtn.textContent = 'Configuration Valid';
     validateConfigBtn.style.background = '#3c7349';
 }
 
 function deactivateCreationPanels() {
-    console.log('🔒 Deactivating creation panels');
+    console.log('Deactivating creation panels');
     creationPanels.classList.add('disabled');
     validateConfigBtn.style.background = '';
     
@@ -274,10 +274,10 @@ function updateWorkflowStatus(step, status, customMessage = null) {
         } else {
             // Use default messages
             const icons = {
-                pending: '⏳',
-                active: '🔄',
-                completed: '✅',
-                error: '❌'
+                pending: '[Pending]',
+                active: '[Active]',
+                completed: '[Completed]',
+                error: '[Error]'
             };
             
             const messages = {
@@ -360,16 +360,16 @@ function uploadImageToServer(file) {
     .then(data => {
     if (data.success) {
         uploadedImage = data;
-        showUploadStatus(`✅ Image uploaded: ${data.originalName}`, 'success');
+        showUploadStatus(`Image uploaded: ${data.originalName}`, 'success');
         updateWorkflowStatus('image', 'completed');
         updateWorkflowStatus('tts', 'active');
     } else {
-        showUploadStatus(`❌ Upload failed: ${data.error}`, 'error');
+        showUploadStatus(`Upload failed: ${data.error}`, 'error');
     }
     })
     .catch(error => {
         console.error('Upload error:', error);
-        showUploadStatus('❌ Upload failed: Network error', 'error');
+        showUploadStatus('Upload failed: Network error', 'error');
     });
 }
 
@@ -400,7 +400,7 @@ async function processTTS() {
 
     // Check if panels are activated (configuration validated)
     if (creationPanels.classList.contains('disabled')) {
-        showNotification('❌ Please validate configuration first', 'error');
+        showNotification('Please validate configuration first', 'error');
         return;
     }
 
@@ -442,7 +442,7 @@ async function processTTS() {
                     sampleRate: data.sampleRate,
                     voiceId: data.voiceId
                 };
-                showNotification(`🎤 TTS generated successfully! Voice: ${data.voiceId}, Samples: ${data.audioSamples}`, 'success');
+                showNotification(`TTS generated successfully! Voice: ${data.voiceId}, Samples: ${data.audioSamples}`, 'success');
                 console.log(`TTS Success - Voice: ${data.voiceId}, Audio samples: ${data.audioSamples}, Results: ${data.resultCount}`);
                 
                 // Update workflow status and enable LipSync button
@@ -453,19 +453,19 @@ async function processTTS() {
                     generateLipSyncBtn.style.opacity = '1';
                 }
             } else {
-                showNotification('⚠️ TTS generated but no audio data received', 'error');
+                showNotification('TTS generated but no audio data received', 'error');
                 console.error('TTS response missing audio data:', data);
             }
         } else {
             console.error('TTS processing failed:', data);
-            showNotification(`❌ TTS failed: ${data.error}`, 'error');
+            showNotification(`TTS failed: ${data.error}`, 'error');
             if (data.details) {
                 console.error('Error details:', data.details);
             }
         }
     } catch (error) {
         console.error('TTS network error:', error);
-        showNotification('❌ TTS network error - check connection and try again', 'error');
+        showNotification('TTS network error - check connection and try again', 'error');
     } finally {
         // Reset button state
         btnText.textContent = 'Generate TTS';
@@ -477,17 +477,17 @@ async function processTTS() {
 // LipSync Generation
 async function generateLipSyncVideo() {
     if (!uploadedImage) {
-        showNotification('❌ Please upload an image first', 'error');
+        showNotification('Please upload an image first', 'error');
         return;
     }
     
     if (!window.currentAudioData) {
-        showNotification('❌ Please generate TTS audio first', 'error');
+        showNotification('Please generate TTS audio first', 'error');
         return;
     }
     
     generateLipSyncBtn.disabled = true;
-    generateLipSyncBtn.textContent = '⏳ Generating Video...';
+    generateLipSyncBtn.textContent = 'Generating Video...';
     updateWorkflowStatus('video', 'active');
     
     try {
@@ -511,18 +511,18 @@ async function generateLipSyncVideo() {
         if (data.success) {
             displayLipSyncVideo(data.videoUrl);
             updateWorkflowStatus('video', 'completed');
-            showNotification('✅ LipSync video generated successfully!', 'success');
+            showNotification('LipSync video generated successfully!', 'success');
         } else {
-            showNotification(`❌ Video generation failed: ${data.error}`, 'error');
+            showNotification(`Video generation failed: ${data.error}`, 'error');
             updateWorkflowStatus('video', 'pending');
         }
     } catch (error) {
         console.error('LipSync generation error:', error);
-        showNotification('❌ Video generation failed: Network error', 'error');
+        showNotification('Video generation failed: Network error', 'error');
         updateWorkflowStatus('video', 'pending');
     } finally {
         generateLipSyncBtn.disabled = false;
-        generateLipSyncBtn.textContent = '🎬 Generate LipSync Video';
+        generateLipSyncBtn.textContent = 'Generate LipSync Video';
     }
 }
 
@@ -595,21 +595,21 @@ function showNotification(message, type = 'info') {
 function speakText() {
     // Debounce mechanism - prevent rapid clicks
     if (window.audioProcessing) {
-        console.log('🚫 Audio processing in progress, ignoring click');
+        console.log('Audio processing in progress, ignoring click');
         return;
     }
     
     if (!window.currentAudioData) {
-        showNotification('❌ No audio data available. Please process text first.', 'error');
+        showNotification('No audio data available. Please process text first.', 'error');
         return;
     }
 
     // Set processing flag
     window.audioProcessing = true;
     
-    console.log('🎯 Starting audio playback...');
-    console.log('📋 Audio data available:', !!window.currentAudioData.audioData);
-    console.log('🎤 Voice ID:', window.currentAudioData.voiceId);
+    console.log('Starting audio playback...');
+    console.log('Audio data available:', !!window.currentAudioData.audioData);
+    console.log('Voice ID:', window.currentAudioData.voiceId);
 
     // Disable the button to prevent double-clicks
     speakTextBtn.disabled = true;
@@ -617,37 +617,37 @@ function speakText() {
 
     // Only stop audio if we're currently playing something
     if (window.currentAudioSource || window.currentAudioElement) {
-        console.log('🛑 Stopping currently playing audio...');
+        console.log('Stopping currently playing audio...');
         stopCurrentAudio();
     } else {
-        console.log('▶️ No audio currently playing, proceeding with new playback');
+        console.log('No audio currently playing, proceeding with new playback');
     }
 
     try {
         // For large audio files (>100k samples), use HTML5 Audio directly to avoid stack overflow
         const audioDataSize = window.currentAudioData.audioData.length;
         if (audioDataSize > 200000) { // Approximately 100k samples when base64 decoded
-            console.log('🎵 Large audio detected, using HTML5 Audio directly');
+            console.log('Large audio detected, using HTML5 Audio directly');
             playWithHTML5Audio();
         } else {
             // Method 1: Try Web Audio API first for smaller files
             playWithWebAudio();
         }
     } catch (error) {
-        console.error('❌ Primary audio method failed, trying fallback:', error);
+        console.error('Primary audio method failed, trying fallback:', error);
         // Method 2: Fallback to the other method
         try {
             const audioDataSize = window.currentAudioData.audioData.length;
             if (audioDataSize > 200000) {
-                console.log('🎵 Fallback: Trying Web Audio API for large file');
+                console.log('Fallback: Trying Web Audio API for large file');
                 playWithWebAudio();
             } else {
-                console.log('🎵 Fallback: Trying HTML5 Audio');
+                console.log('Fallback: Trying HTML5 Audio');
                 playWithHTML5Audio();
             }
         } catch (fallbackError) {
-            console.error('❌ All audio playback methods failed:', fallbackError);
-            showNotification('❌ All audio playback methods failed', 'error');
+            console.error('All audio playback methods failed:', fallbackError);
+            showNotification('All audio playback methods failed', 'error');
             resetAudioButton();
             window.audioProcessing = false;
         }
@@ -655,29 +655,29 @@ function speakText() {
 }
 
 function playWithWebAudio() {
-    console.log('🎵 Attempting Web Audio API playback...');
+    console.log('Attempting Web Audio API playback...');
     
     // Set flag to prevent interruption during startup
     window.audioStarting = true;
     
     // Create fresh audio context each time
     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    console.log('🔧 Audio context state:', audioContext.state);
+    console.log('Audio context state:', audioContext.state);
     
     // Handle suspended context
     if (audioContext.state === 'suspended') {
-        console.log('⏸️ Audio context suspended, resuming...');
+        console.log('Audio context suspended, resuming...');
         audioContext.resume().then(() => {
-            console.log('▶️ Audio context resumed successfully');
+            console.log('Audio context resumed successfully');
         }).catch(err => {
-            console.error('❌ Failed to resume audio context:', err);
+            console.error('Failed to resume audio context:', err);
         });
     }
     
     window.currentAudioContext = audioContext;
 
     // Convert base64 to Float32Array
-    console.log('🔄 Converting base64 audio data...');
+    console.log('Converting base64 audio data...');
     const binaryString = atob(window.currentAudioData.audioData);
     const bytes = new Uint8Array(binaryString.length);
     
@@ -686,7 +686,7 @@ function playWithWebAudio() {
     }
     
     const audioFloat32 = new Float32Array(bytes.buffer);
-    console.log(`📊 Audio data - Samples: ${audioFloat32.length}, Sample rate: ${window.currentAudioData.sampleRate}`);
+    console.log(`Audio data - Samples: ${audioFloat32.length}, Sample rate: ${window.currentAudioData.sampleRate}`);
     
     // Validate audio data (optimized for large arrays)
     let minVal = audioFloat32[0];
@@ -701,21 +701,21 @@ function playWithWebAudio() {
     }
     avgVal = avgVal / audioFloat32.length;
     
-    console.log(`📈 Audio range: ${minVal.toFixed(4)} to ${maxVal.toFixed(4)}, Average amplitude: ${avgVal.toFixed(4)}`);
+    console.log(`Audio range: ${minVal.toFixed(4)} to ${maxVal.toFixed(4)}, Average amplitude: ${avgVal.toFixed(4)}`);
     
     if (avgVal === 0) {
-        console.warn('⚠️ Audio data appears to be silent (all zeros)');
+        console.warn('Audio data appears to be silent (all zeros)');
         throw new Error('Audio data is silent');
     }
     
     // Create audio buffer
-    console.log('🎛️ Creating audio buffer...');
+    console.log('Creating audio buffer...');
     const buffer = audioContext.createBuffer(1, audioFloat32.length, window.currentAudioData.sampleRate);
     buffer.copyToChannel(audioFloat32, 0);
-    console.log(`✅ Audio buffer created - Duration: ${buffer.duration.toFixed(2)}s`);
+    console.log(`Audio buffer created - Duration: ${buffer.duration.toFixed(2)}s`);
     
     // Create source
-    console.log('🎼 Creating audio source...');
+    console.log('Creating audio source...');
     const source = audioContext.createBufferSource();
     window.currentAudioSource = source;
     source.buffer = buffer;
@@ -726,8 +726,8 @@ function playWithWebAudio() {
     
     // Event handlers with detailed logging
     source.onended = () => {
-        console.log('🏁 Web Audio playback ended naturally');
-        console.log('🧹 Clearing audio references after natural end');
+        console.log('Web Audio playback ended naturally');
+        console.log('Clearing audio references after natural end');
         // Clear the current audio references
         window.currentAudioSource = null;
         window.currentAudioContext = null;
@@ -735,40 +735,40 @@ function playWithWebAudio() {
     };
     
     source.onerror = (error) => {
-        console.error('❌ Web Audio source error:', error);
+        console.error('Web Audio source error:', error);
         resetAudioButton();
-        showNotification('❌ Web Audio playback error', 'error');
+        showNotification('Web Audio playback error', 'error');
     };
     
     // Add additional event listeners for debugging
     audioContext.onstatechange = () => {
-        console.log('🔄 Audio context state changed to:', audioContext.state);
+        console.log('Audio context state changed to:', audioContext.state);
     };
     
     // Start playback
-    console.log('🚀 Starting Web Audio playback...');
+    console.log('Starting Web Audio playback...');
     try {
         source.start(0);
-        console.log('✅ Web Audio source started successfully');
+        console.log('Web Audio source started successfully');
         
         // Clear the startup flag after successful start
         window.audioStarting = false;
         window.audioProcessing = false;
         
-        showNotification(`🎤 Playing with Web Audio API - Voice: ${window.currentAudioData.voiceId}`, 'info');
+        showNotification(`Playing with Web Audio API - Voice: ${window.currentAudioData.voiceId}`, 'info');
         
         // Set a timeout to check if audio is still playing after a short delay
         setTimeout(() => {
             if (window.currentAudioContext && window.currentAudioContext.state === 'running') {
-                console.log('✅ Audio context still running after 200ms');
+                console.log('Audio context still running after 200ms');
             } else {
-                console.warn('⚠️ Audio context not running after 200ms, state:', 
+                console.warn('Audio context not running after 200ms, state:', 
                     window.currentAudioContext ? window.currentAudioContext.state : 'null');
             }
         }, 200);
         
     } catch (startError) {
-        console.error('❌ Failed to start Web Audio source:', startError);
+        console.error('Failed to start Web Audio source:', startError);
         window.audioStarting = false;
         window.audioProcessing = false;
         resetAudioButton();
@@ -777,18 +777,18 @@ function playWithWebAudio() {
 }
 
 function playWithHTML5Audio() {
-    console.log('🎵 Attempting HTML5 Audio playback...');
+    console.log('Attempting HTML5 Audio playback...');
     
     // Convert Float32Array to WAV blob
-    console.log('🔄 Converting to WAV format...');
+    console.log('Converting to WAV format...');
     const audioFloat32 = convertBase64ToFloat32Array(window.currentAudioData.audioData);
-    console.log(`📊 HTML5 Audio data - Samples: ${audioFloat32.length}`);
+    console.log(`HTML5 Audio data - Samples: ${audioFloat32.length}`);
     
     const wavBlob = createWavBlob(audioFloat32, window.currentAudioData.sampleRate);
-    console.log(`📦 WAV blob created - Size: ${wavBlob.size} bytes`);
+    console.log(`WAV blob created - Size: ${wavBlob.size} bytes`);
     
     const audioUrl = URL.createObjectURL(wavBlob);
-    console.log('🔗 Audio URL created:', audioUrl.substring(0, 50) + '...');
+    console.log('Audio URL created:', audioUrl.substring(0, 50) + '...');
     
     // Create HTML5 audio element
     const audio = new Audio(audioUrl);
@@ -799,36 +799,36 @@ function playWithHTML5Audio() {
     
     // Event handlers with detailed logging
     audio.onloadstart = () => {
-        console.log('📥 HTML5 Audio: Load started');
+        console.log('HTML5 Audio: Load started');
     };
     
     audio.onloadedmetadata = () => {
-        console.log(`📋 HTML5 Audio: Metadata loaded - Duration: ${audio.duration.toFixed(2)}s`);
+        console.log(`HTML5 Audio: Metadata loaded - Duration: ${audio.duration.toFixed(2)}s`);
     };
     
     audio.onloadeddata = () => {
-        console.log('✅ HTML5 Audio: Data loaded');
+        console.log('HTML5 Audio: Data loaded');
     };
     
     audio.oncanplay = () => {
-        console.log('▶️ HTML5 Audio: Can start playing');
+        console.log('HTML5 Audio: Can start playing');
     };
     
     audio.onplay = () => {
-        console.log('🎵 HTML5 Audio: Playback started');
+        console.log('HTML5 Audio: Playback started');
     };
     
     audio.onplaying = () => {
-        console.log('🎶 HTML5 Audio: Actually playing');
+        console.log('HTML5 Audio: Actually playing');
     };
     
     audio.onpause = () => {
-        console.log('⏸️ HTML5 Audio: Paused');
+        console.log('HTML5 Audio: Paused');
     };
     
     audio.onended = () => {
-        console.log('🏁 HTML5 Audio: Playback ended naturally');
-        console.log('🧹 Clearing HTML5 audio references after natural end');
+        console.log('HTML5 Audio: Playback ended naturally');
+        console.log('Clearing HTML5 audio references after natural end');
         // Clear the current audio references
         window.currentAudioElement = null;
         URL.revokeObjectURL(audioUrl);
@@ -836,32 +836,32 @@ function playWithHTML5Audio() {
     };
     
     audio.onerror = (error) => {
-        console.error('❌ HTML5 Audio error:', error);
-        console.error('❌ Audio error details:', {
+        console.error('HTML5 Audio error:', error);
+        console.error('Audio error details:', {
             error: audio.error,
             networkState: audio.networkState,
             readyState: audio.readyState
         });
         URL.revokeObjectURL(audioUrl);
         resetAudioButton();
-        showNotification('❌ HTML5 Audio playback error', 'error');
+        showNotification('HTML5 Audio playback error', 'error');
     };
     
     audio.onstalled = () => {
-        console.warn('⚠️ HTML5 Audio: Stalled');
+        console.warn('HTML5 Audio: Stalled');
     };
     
     audio.onabort = () => {
-        console.warn('⚠️ HTML5 Audio: Aborted');
+        console.warn('HTML5 Audio: Aborted');
     };
     
     // Start playback
-    console.log('🚀 Starting HTML5 Audio playback...');
+    console.log('Starting HTML5 Audio playback...');
     audio.play().then(() => {
-        console.log('✅ HTML5 Audio play() promise resolved');
-        showNotification(`🎤 Playing with HTML5 Audio - Voice: ${window.currentAudioData.voiceId}`, 'info');
+        console.log('HTML5 Audio play() promise resolved');
+        showNotification(`Playing with HTML5 Audio - Voice: ${window.currentAudioData.voiceId}`, 'info');
     }).catch(error => {
-        console.error('❌ HTML5 Audio play() promise rejected:', error);
+        console.error('HTML5 Audio play() promise rejected:', error);
         URL.revokeObjectURL(audioUrl);
         resetAudioButton();
         throw error;
@@ -919,22 +919,22 @@ function createWavBlob(audioFloat32, sampleRate) {
 function stopCurrentAudio() {
     // Prevent stopping audio during startup
     if (window.audioStarting) {
-        console.log('🚫 Ignoring stop request during audio startup');
+        console.log('Ignoring stop request during audio startup');
         return;
     }
     
-    console.log('🛑 Stopping current audio...');
-    console.log('📍 Stop called from:', new Error().stack);
+    console.log('Stopping current audio...');
+    console.log('Stop called from:', new Error().stack);
     let stoppedSomething = false;
     
     // Stop Web Audio API source
     if (window.currentAudioSource) {
         try {
             window.currentAudioSource.stop();
-            console.log('✅ Stopped Web Audio source');
+            console.log('Stopped Web Audio source');
             stoppedSomething = true;
         } catch (e) {
-            console.log('⚠️ Web Audio source stop error (may be normal):', e.message);
+            console.log('Web Audio source stop error (may be normal):', e.message);
         }
         window.currentAudioSource = null;
     }
@@ -943,10 +943,10 @@ function stopCurrentAudio() {
     if (window.currentAudioContext && window.currentAudioContext.state !== 'closed') {
         try {
             window.currentAudioContext.close();
-            console.log('✅ Closed Web Audio context');
+            console.log('Closed Web Audio context');
             stoppedSomething = true;
         } catch (e) {
-            console.log('⚠️ Web Audio context close error:', e.message);
+            console.log('Web Audio context close error:', e.message);
         }
         window.currentAudioContext = null;
     }
@@ -956,36 +956,36 @@ function stopCurrentAudio() {
         try {
             window.currentAudioElement.pause();
             window.currentAudioElement.currentTime = 0;
-            console.log('✅ Stopped HTML5 audio');
+            console.log('Stopped HTML5 audio');
             stoppedSomething = true;
         } catch (e) {
-            console.log('⚠️ HTML5 audio stop error:', e.message);
+            console.log('HTML5 audio stop error:', e.message);
         }
         window.currentAudioElement = null;
     }
     
     if (!stoppedSomething) {
-        console.log('ℹ️ No audio was currently playing');
+        console.log('No audio was currently playing');
     }
     
     resetAudioButton();
 }
 
 function updatePlayingState() {
-    console.log('🎛️ Updating button to stop state');
-    speakTextBtn.textContent = '🔇 Stop Speaking';
+    console.log('Updating button to stop state');
+    speakTextBtn.textContent = 'Stop Speaking';
     speakTextBtn.disabled = true; // Keep disabled initially
     speakTextBtn.style.opacity = '0.6';
     
     // Add a delay before making the stop button clickable
     // This prevents accidental clicks during the button state transition
     setTimeout(() => {
-        if (speakTextBtn.textContent === '🔇 Stop Speaking') {
-            console.log('🎛️ Enabling stop button after delay');
+        if (speakTextBtn.textContent === 'Stop Speaking') {
+            console.log('Enabling stop button after delay');
             speakTextBtn.disabled = false;
             speakTextBtn.style.opacity = '1';
             speakTextBtn.onclick = (event) => {
-                console.log('🖱️ Stop button clicked (after delay)');
+                console.log('Stop button clicked (after delay)');
                 event.preventDefault();
                 event.stopPropagation();
                 stopCurrentAudio();
@@ -995,8 +995,8 @@ function updatePlayingState() {
 }
 
 function resetAudioButton() {
-    console.log('🔄 Resetting audio button to initial state');
-    speakTextBtn.textContent = '🔊 Listen';
+    console.log('Resetting audio button to initial state');
+    speakTextBtn.textContent = 'Listen';
     speakTextBtn.disabled = false;
     speakTextBtn.style.opacity = '1';
     speakTextBtn.style.background = ''; // Reset to default btn-success color
