@@ -10,8 +10,8 @@
     <!-- Top Navigation -->
     <nav class="top-tab-navigation">
         <div class="tab-container">
-            <a href="/lipsync" class="tab-btn">LipSync Generation</a>
             <a href="/memory" class="tab-btn active">Memory Companion</a>
+            <a href="/lipsync" class="tab-btn">LipSync Generation</a>
         </div>
     </nav>
 
@@ -19,7 +19,7 @@
         <!-- Memory Page Header -->
         <header class="page-header">
             <h1>Memory Companion</h1>
-            <p>Generate animations and chat with AI using voice interaction</p>
+            <p>Bring your photos to life and have voice conversations with it</p>
         </header>
         
         <!-- Configuration Section -->
@@ -46,6 +46,45 @@
                     <button type="button" id="toggleMemoryRunwayToken" class="toggle-btn">Show</button>
                 </div>
             </div>
+            
+            <!-- AI Personality Configuration -->
+            <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid #e5e7eb;">
+                <h3 style="font-size: 1rem; font-weight: 600; color: #1a1a1a; margin-bottom: 16px;">Companion Configuration (Optional)</h3>
+                
+                <div class="config-row">
+                    <div class="config-field" style="flex: 1; min-width: 100%;">
+                        <label for="memoryPersonalityInput">Personality:</label>
+                        <textarea 
+                            id="memoryPersonalityInput" 
+                            placeholder="e.g., You are user's grandpa. You have a warm, friendly personality."
+                            rows="1"
+                            style="min-height: 30px;"></textarea>
+                    </div>
+                </div>
+                
+                <div class="config-row">
+                    <div class="config-field" style="flex: 1; min-width: 100%;">
+                        <label for="memoryBackgroundInput">Background (Optional):</label>
+                        <textarea 
+                            id="memoryBackgroundInput" 
+                            placeholder="e.g., You grew up in a small village and love nature..."
+                            rows="1"
+                            style="min-height: 30px;"></textarea>
+                    </div>
+                </div>
+                
+                <div class="config-row">
+                    <div class="config-field" style="flex: 1; min-width: 100%;">
+                        <label for="memoryMemoriesInput">Memories (Optional):</label>
+                        <textarea 
+                            id="memoryMemoriesInput" 
+                            placeholder="e.g., You remember that the user enjoys hiking and photography..."
+                            rows="1"
+                            style="min-height: 30px;"></textarea>
+                    </div>
+                </div>
+            </div>
+            
             <div class="config-status" id="memoryConfigStatus"></div>
         </section>
 

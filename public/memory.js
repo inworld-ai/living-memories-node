@@ -12,6 +12,11 @@ const validateMemoryConfigBtn = document.getElementById('validateMemoryConfig');
 const memoryConfigStatus = document.getElementById('memoryConfigStatus');
 const memoryPanels = document.getElementById('memoryPanels');
 
+// AI Personality Configuration Elements
+const memoryPersonalityInput = document.getElementById('memoryPersonalityInput');
+const memoryBackgroundInput = document.getElementById('memoryBackgroundInput');
+const memoryMemoriesInput = document.getElementById('memoryMemoriesInput');
+
 const memoryUploadArea = document.getElementById('memoryUploadArea');
 const memoryImageInput = document.getElementById('memoryImageInput');
 const memoryImagePreview = document.getElementById('memoryImagePreview');
@@ -149,14 +154,14 @@ async function validateMemoryConfiguration() {
     showMemoryConfigStatus('Validating Inworld configuration...', 'info');
     
     try {
-        // Test the API key and Voice ID with a simple chat request
-        const response = await fetch('/memory-chat', {
+        // Test the API key and Voice ID with a TTS request to verify both are valid
+        const response = await fetch('/process-tts', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                message: 'Test validation',
+                text: 'Test validation',
                 apiKey,
                 voiceId
             })
@@ -188,7 +193,6 @@ function activateMemoryPanels() {
         memoryPanels.classList.remove('disabled');
     }
     validateMemoryConfigBtn.textContent = 'Configuration Valid';
-    validateMemoryConfigBtn.style.background = '#48bb78';
     
     // Enable voice chat immediately after validation
     if (memoryChatControls) {
@@ -210,18 +214,37 @@ function getShortErrorMessage(errorMessage) {
     
     const error = errorMessage.toLowerCase();
     
+    // Connection/Network errors
     if (error.includes('connection') || error.includes('timeout') || error.includes('network')) {
         return 'Connection failed';
     }
     
+    // Authentication errors
     if (error.includes('unauthorized') || error.includes('authentication') || error.includes('api key')) {
         return 'Invalid API key';
     }
     
+    // TTS/Voice errors
+    if (error.includes('tts') || error.includes('voice') || error.includes('speaker')) {
+        return 'Voice not available';
+    }
+    
+    // Graph/Config errors
     if (error.includes('graph') || error.includes('config') || error.includes('parse')) {
         return 'Configuration error';
     }
     
+    // Server errors
+    if (error.includes('internal') || error.includes('server')) {
+        return 'Server error';
+    }
+    
+    // Rate limiting
+    if (error.includes('rate') || error.includes('limit')) {
+        return 'Rate limit exceeded';
+    }
+    
+    // Default: Take first meaningful part of error
     const words = errorMessage.split(/[:;,]/)[0].trim();
     if (words.length > 30) {
         return words.substring(0, 27) + '...';
@@ -660,6 +683,11 @@ async function processVoiceInput(audioBlob) {
         const apiKey = memoryApiKeyInput?.value.trim();
         const voiceId = memoryVoiceIdInput?.value.trim();
         
+        // Get AI personality configuration
+        const personality = memoryPersonalityInput?.value.trim() || '';
+        const background = memoryBackgroundInput?.value.trim() || '';
+        const memories = memoryMemoriesInput?.value.trim() || '';
+        
         console.log('Sending audio to Inworld STT→LLM→TTS pipeline...');
         
         // Send audio directly to Inworld voice agent pipeline
@@ -673,7 +701,10 @@ async function processVoiceInput(audioBlob) {
                 sampleRate: targetSampleRate, // Use 16kHz for STT
                 apiKey: apiKey,
                 voiceId: voiceId,
-                conversationHistory: memoryConversationHistory
+                conversationHistory: memoryConversationHistory,
+                personality: personality,
+                background: background,
+                memories: memories
             })
         });
         
@@ -687,14 +718,10 @@ async function processVoiceInput(audioBlob) {
         console.log('Response received:', data.success ? 'SUCCESS' : 'FAILED');
         
         if (data.success) {
-            // Display and log STT result for debugging
+            // Log STT result for debugging
             if (data.sttText) {
                 console.log('STT Result:', data.sttText);
-                showChatStatus(`You said: "${data.sttText}"`, 'active');
                 memoryConversationHistory.push({ role: 'user', content: data.sttText });
-                
-                // Brief pause to show STT result before AI response
-                await new Promise(resolve => setTimeout(resolve, 1500));
             } else {
                 console.log('No STT result received');
                 showChatStatus('No speech detected', 'error');
@@ -722,9 +749,9 @@ async function processVoiceInput(audioBlob) {
             
             // Display complete AI response (all sentences)
             if (fullResponse.length > 120) {
-                showChatStatus(`AI: "${fullResponse.substring(0, 117)}..."`, 'active');
+                showChatStatus(`${fullResponse.substring(0, 117)}...`, 'active');
             } else {
-                showChatStatus(`AI: "${fullResponse}"`, 'active');
+                showChatStatus(fullResponse, 'active');
             }
             
             // Note: Button reset happens either in playVoiceResponse() onended event or timeout above
@@ -802,7 +829,7 @@ function playVoiceResponse(audioBase64, sampleRate) {
         
         // Handle audio completion
         source.onended = () => {
-            console.log('AI voice response finished playing');
+            console.log('Voice response finished playing');
             // Clear references
             currentAudioSource = null;
             currentAudioContext = null;
@@ -818,7 +845,7 @@ function playVoiceResponse(audioBase64, sampleRate) {
         };
         
         source.start();
-        console.log('Playing AI voice response...');
+        console.log('Playing voice response...');
         
     } catch (error) {
         console.error('Audio playback error:', error);

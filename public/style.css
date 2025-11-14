@@ -537,7 +537,7 @@ textarea {
     font-family: inherit;
     font-weight: 400;
     line-height: 1.5;
-    resize: vertical;
+    resize: none;
     transition: all 0.2s ease;
     flex: 1;
     background: #ffffff;

@@ -30,6 +30,9 @@ if (!defaultApiKey) {
   );
 }
 
+// Memory Companion System Prompt Configuration
+const DEFAULT_PERSONALITY = "You are a helpful memory companion AI. You have a warm, friendly personality and can remember previous conversations. Provide thoughtful, engaging responses. Keep responses conversational and not too long.";
+
 // Middleware
 app.use(cors());
 app.use(express.json({ limit: '50mb' })); // Increased limit to handle large audio/video payloads
@@ -139,7 +142,7 @@ function createTTSGraph(apiKey: string, voiceId?: string) {
 
 // Routes
 app.get('/', (req, res) => {
-  res.redirect('/lipsync');
+  res.redirect('/memory');
 });
 
 app.get('/lipsync', (req, res) => {
@@ -373,7 +376,7 @@ app.post('/generate-animation', async (req, res) => {
 // Memory Companion - Voice chat endpoint using official Inworld Voice Agent template
 app.post('/voice-chat', async (req, res) => {
   try {
-    const { audioData, sampleRate, apiKey, voiceId, conversationHistory } = req.body;
+    const { audioData, sampleRate, apiKey, voiceId, conversationHistory, personality, background, memories } = req.body;
     
     if (!apiKey) {
       return res.status(400).json({ error: 'API key is required' });
@@ -387,11 +390,14 @@ app.post('/voice-chat', async (req, res) => {
       audioDataSize: audioData.length,
       sampleRate: sampleRate || 16000,
       voiceId: voiceId || 'default',
-      historyLength: conversationHistory?.length || 0
+      historyLength: conversationHistory?.length || 0,
+      hasPersonality: !!personality,
+      hasBackground: !!background,
+      hasMemories: !!memories
     });
 
     // Create voice agent graph with audio input (following official template)
-    const voiceGraph = await createVoiceAgentGraph(apiKey, voiceId, true);
+    const voiceGraph = await createVoiceAgentGraph(apiKey, voiceId, true, personality, background, memories);
     
     // Convert base64 audio to proper format for Inworld STT
     const audioBuffer = Buffer.from(audioData, 'base64');
@@ -892,10 +898,37 @@ async function pollRunwayTask(taskId: string, apiKey: string): Promise<string> {
 }
 
 // Voice Agent Graph Creation (based on official Inworld template)
-async function createVoiceAgentGraph(apiKey: string, voiceId?: string, withAudioInput: boolean = true) {
+async function createVoiceAgentGraph(
+  apiKey: string, 
+  voiceId?: string, 
+  withAudioInput: boolean = true,
+  personality?: string,
+  background?: string,
+  memories?: string
+) {
   const timestamp = Date.now();
   const postfix = withAudioInput ? '-with-audio-input' : '-with-text-input';
   const graphId = `voice-agent-${timestamp}${postfix}`;
+  
+  // Build system prompt from user input or default
+  function buildSystemPrompt(): string {
+    // Use user-provided values or default
+    const finalPersonality = personality || DEFAULT_PERSONALITY;
+    const finalBackground = background?.trim();
+    const finalMemories = memories?.trim();
+    
+    let systemPrompt = finalPersonality;
+    
+    if (finalBackground) {
+      systemPrompt += `\n\nBackground: ${finalBackground}`;
+    }
+    
+    if (finalMemories) {
+      systemPrompt += `\n\nMemories: ${finalMemories}`;
+    }
+    
+    return systemPrompt;
+  }
   
   // Custom node to build LLM chat request from conversation state
   class DialogPromptBuilderNode extends CustomNode {
@@ -920,7 +953,7 @@ async function createVoiceAgentGraph(apiKey: string, voiceId?: string, withAudio
       const messages = [
         {
           role: "system",
-          content: "You are a helpful memory companion AI. You have a warm, friendly personality and can remember previous conversations. Provide thoughtful, engaging responses. Keep responses conversational and not too long."
+          content: buildSystemPrompt()
         },
         ...(conversationHistory || []),
         {
