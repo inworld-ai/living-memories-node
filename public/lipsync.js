@@ -528,7 +528,6 @@ async function generateLipSyncVideo() {
 
 function displayLipSyncVideo(videoUrl) {
     const videoContent = document.getElementById('videoContent');
-    const videoControls = document.getElementById('videoControls');
     
     videoContent.innerHTML = `
         <video id="lipSyncVideo" controls style="width: 100%; max-height: 400px; border-radius: 10px;">
@@ -536,17 +535,6 @@ function displayLipSyncVideo(videoUrl) {
             Your browser does not support the video tag.
         </video>
     `;
-    
-    videoControls.style.display = 'flex';
-    
-    // Add download functionality
-    const downloadBtn = document.getElementById('downloadVideo');
-    downloadBtn.onclick = () => {
-        const a = document.createElement('a');
-        a.href = videoUrl;
-        a.download = 'lipsync-video.mp4';
-        a.click();
-    };
 }
 
 // Utility Functions
