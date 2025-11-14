@@ -44,15 +44,3 @@ You'll be redirected to the LipSync page.
 4. Press & hold to record voice
 5. Chat with AI using voice
 
-
-## Troubleshooting
-
-**Problem**: API validation fails\
-**Solution**: Double-check your API key
-
-**Problem**: Video generation takes too long\
-**Solution**: This is normal - Memory video generation usually takes 15-45s，Lip sync video generation usually takes 1min ~ 2.5min. 
-
-**Problem**: Voice recording doesn't work\
-**Solution**: Grant microphone permissions
-
