@@ -37,10 +37,10 @@ const DEFAULT_PERSONALITY = "You are a helpful memory companion AI. You have a w
 app.use(cors());
 app.use(express.json({ limit: '50mb' })); // Increased limit to handle large audio/video payloads
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, '..', 'public')));
 
 // Create uploads directory if it doesn't exist
-const uploadsDir = path.join(__dirname, 'uploads');
+const uploadsDir = path.join(__dirname, '..', 'uploads');
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
@@ -146,11 +146,11 @@ app.get('/', (req, res) => {
 });
 
 app.get('/lipsync', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'lipsync.html'));
+  res.sendFile(path.join(__dirname, '..', 'public', 'lipsync.html'));
 });
 
 app.get('/memory', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'memory.html'));
+  res.sendFile(path.join(__dirname, '..', 'public', 'memory.html'));
 });
 
 // Image upload endpoint
@@ -625,7 +625,7 @@ function convertBase64ToWav(base64AudioData: string, sampleRate: number): Buffer
 }
 
 async function getImageBuffer(imageUrl: string): Promise<Buffer> {
-  const imagePath = path.join(__dirname, 'uploads', path.basename(imageUrl));
+  const imagePath = path.join(__dirname, '..', 'uploads', path.basename(imageUrl));
   return fs.readFileSync(imagePath);
 }
 

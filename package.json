@@ -1,11 +1,11 @@
 {
   "name": "inworld-lipsync-memory-demo",
   "version": "1.0.0",
-  "main": "server.ts",
+  "main": "src/server.ts",
   "scripts": {
-    "start": "npx ts-node server.ts",
-    "dev": "npx ts-node server.ts",
-    "build": "npx tsc",
+    "start": "npx ts-node src/server.ts",
+    "dev": "npx ts-node src/server.ts",
+    "build": "npx tsc -p src/tsconfig.json",
     "clean": "node -e \"const fs=require('fs');const path=require('path');const dir=path.join(__dirname,'uploads');if(fs.existsSync(dir)){fs.readdirSync(dir).forEach(f=>fs.unlinkSync(path.join(dir,f)));}\"",
     "clean:win": "cd uploads && del /Q *.*",
     "clean:unix": "rm -rf uploads/*"
