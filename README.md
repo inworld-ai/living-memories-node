@@ -1,4 +1,4 @@
-# Living Memories_Node - Inworld Template
+# Living Memories
 
 Create talking-photo experiences powered by Inworld's Voice Clone, TTS, and Node.js Runtime, combined with video generation from Runway ML. This template demonstrates two key features: LipSync video generation and an interactive Memory Companion.
 
@@ -18,8 +18,8 @@ Create talking-photo experiences powered by Inworld's Voice Clone, TTS, and Node
 ### Step 1: Clone the Repository
 
 ```bash
-git clone <repository-url>
-cd Living-Memories_Node
+git clone https://github.com/inworld-ai/living-memories-node.git
+cd living-memories-node
 ```
 
 ### Step 2: Install Dependencies
