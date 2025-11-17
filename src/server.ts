@@ -18,6 +18,7 @@ import {
   ProcessContext,
 } from '@inworld/runtime/graph';
 import { renderJinja } from '@inworld/runtime/primitives/llm';
+import { stopInworldRuntime } from '@inworld/runtime';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -200,7 +201,7 @@ app.post('/process-tts', async (req, res) => {
     ttsGraph = createTTSGraph(activeApiKey, voiceId);
     
     console.log('Starting TTS generation...');
-    const { outputStream } = ttsGraph.start(text);
+    const { outputStream } = await ttsGraph.start(text);
     
     let initialText = '';
     let resultCount = 0;
@@ -217,7 +218,10 @@ app.post('/process-tts', async (req, res) => {
               console.log(`Text chunk: "${chunk.text}"`);
             }
             if (chunk.audio?.data) {
-              const audioChunk = Array.from(chunk.audio.data) as number[];
+              // v0.8: audio data is base64-encoded, need to decode
+              const decodedData = Buffer.from(chunk.audio.data as any, 'base64');
+              const float32Array = new Float32Array(decodedData.buffer, decodedData.byteOffset, decodedData.byteLength / 4);
+              const audioChunk = Array.from(float32Array);
               allAudioData = allAudioData.concat(audioChunk);
               console.log(`Audio chunk received: ${audioChunk.length} samples`);
             }
@@ -259,15 +263,7 @@ app.post('/process-tts', async (req, res) => {
       details: error instanceof Error ? error.stack : 'Unknown error'
     });
   } finally {
-    // Always clean up the graph
-    if (ttsGraph) {
-      try {
-        console.log('Cleaning up TTS graph...');
-        ttsGraph.destroy();
-      } catch (cleanupError) {
-        console.error('Error cleaning up TTS graph:', cleanupError);
-      }
-    }
+    // Graph cleanup is handled by stopInworldRuntime() on shutdown
   }
 });
 
@@ -442,7 +438,7 @@ app.post('/voice-chat', async (req, res) => {
       conversationHistory: conversationHistory || []
     };
 
-    const { outputStream } = voiceGraph.start(audioInput);
+    const { outputStream } = await voiceGraph.start(audioInput);
     
     let sttText = '';
     let llmResponse = '';
@@ -466,7 +462,10 @@ app.post('/voice-chat', async (req, res) => {
               console.log('TTS Text chunk:', chunk.text);
             }
             if (chunk.audio?.data) {
-              const audioChunk = Array.from(chunk.audio.data) as number[];
+              // v0.8: audio data is base64-encoded, need to decode
+              const decodedData = Buffer.from(chunk.audio.data as any, 'base64');
+              const float32Array = new Float32Array(decodedData.buffer, decodedData.byteOffset, decodedData.byteLength / 4);
+              const audioChunk = Array.from(float32Array);
               ttsAudioData = ttsAudioData.concat(audioChunk);
               console.log('TTS Audio chunk received:', audioChunk.length, 'samples');
             }
@@ -485,8 +484,7 @@ app.post('/voice-chat', async (req, res) => {
     
     console.log('Pipeline completed - STT:', sttText ? 'SUCCESS' : 'FAILED', 'LLM:', llmResponse ? 'SUCCESS' : 'FAILED', 'TTS Audio:', ttsAudioData.length, 'samples');
 
-    // Clean up
-    voiceGraph.destroy();
+    // Graph cleanup is handled by stopInworldRuntime() on shutdown
 
     // Convert audio data to base64 for transmission
     const audioBuffer2 = new Float32Array(ttsAudioData);
@@ -550,7 +548,7 @@ app.post('/memory-chat', async (req, res) => {
       content: message
     }];
 
-    const { outputStream } = testGraph.start(new GraphTypes.LLMChatRequest({ messages }));
+    const { outputStream } = await testGraph.start(new GraphTypes.LLMChatRequest({ messages }));
     let response = '';
     
     for await (const result of outputStream) {
@@ -564,7 +562,7 @@ app.post('/memory-chat', async (req, res) => {
       });
     }
 
-    testGraph.destroy();
+    // Graph cleanup is handled by stopInworldRuntime() on shutdown
 
     res.json({
       success: true,
@@ -1086,8 +1084,18 @@ function inferUserInputFromAIResponse(aiResponse: string): string {
   return `Said something about: ${words}`;
 }
 
-// Graceful shutdown
-process.on('SIGINT', () => {
-  console.log('\n🛑 Shutting down server...');
+// Graceful shutdown handler
+async function gracefulShutdown(signal: string) {
+  console.log(`\n🛑 ${signal} received, shutting down server...`);
+  try {
+    await stopInworldRuntime();
+    console.log('✅ Inworld Runtime stopped successfully');
+  } catch (error) {
+    console.error('Error stopping Inworld Runtime:', error);
+  }
   process.exit(0);
-});
+}
+
+// Register shutdown handlers
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));

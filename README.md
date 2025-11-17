@@ -28,6 +28,8 @@ cd Living-Memories_Node
 npm install
 ```
 
+> **Note**: This project uses `@inworld/runtime` v0.8.0. Make sure to run `npm install` to get the correct version.
+
 ### Step 3: Configure Environment Variables
 
 Duplicate `env.example` to `.env` in the root directory.
