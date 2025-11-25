@@ -6,7 +6,7 @@ Create talking-photo experiences powered by Inworld's Voice Clone, TTS, and Node
 
 - Node.js (v18 or higher)
 - npm
-- [Inworld AI API Key](https://studio.inworld.ai/)
+- [Inworld AI API Key](https://platform.inworld.ai/)
 - [Voice Clone & Get VoiceId](https://platform.inworld.ai/)
 - [Runway ML Account email](https://runwayml.com/) (for LipSync Generation)
 - [UseAPI Token](https://useapi.net/) (for LipSync Generation)
