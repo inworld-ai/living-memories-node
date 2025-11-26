@@ -2,6 +2,8 @@
 
 Create talking-photo experiences powered by Inworld's Voice Clone, TTS, and Node.js Runtime, combined with video generation from Runway ML. This template demonstrates two key features: an interactive Memory Companion and LipSync video generation.
 
+[![Watch the video](https://img.youtube.com/vi/FLKn-U0TEjw/maxresdefault.jpg)](https://youtu.be/FLKn-U0TEjw)
+
 ## Prerequisites
 
 - Node.js (v18 or higher)
