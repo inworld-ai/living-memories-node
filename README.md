@@ -1,4 +1,4 @@
-# Living Memories
+# Living Memories - Inworld Node Runtime Demo
 
 Create talking-photo experiences powered by Inworld's Voice Clone, TTS, and Node.js Runtime, combined with video generation from Runway ML. This template demonstrates two key features: an interactive Memory Companion and LipSync video generation.
 
