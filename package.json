@@ -14,7 +14,7 @@
   "license": "MIT",
   "description": "Inworld AI Demo: LipSync Video Generation & Voice-Based Memory Companion with TTS, STT, and LLM integration",
   "dependencies": {
-    "@inworld/runtime": "https://assets.inworld.ai/node-packages/inworld-runtime-0.8.0-rc.15.tgz",
+    "@inworld/runtime": "^0.8.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",
     "express": "^4.18.2",
