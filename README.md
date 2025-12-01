@@ -10,7 +10,7 @@ Create talking-photo experiences powered by Inworld's Voice Clone, TTS, and Node
 
 ## Prerequisites
 
-- Node.js (v18 or higher)
+- Node.js (v20 or higher)
 - npm
 - [Inworld AI API Key](https://platform.inworld.ai/)
 - [Voice Clone & Get VoiceId](https://platform.inworld.ai/)
