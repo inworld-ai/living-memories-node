@@ -198,6 +198,10 @@ section h3 {
     font-weight: 400;
 }
 
+.config-field:has(.toggle-btn) .config-input {
+    padding-right: 70px;
+}
+
 .toggle-btn {
     position: absolute;
     right: 12px;
