@@ -121,7 +121,7 @@ function createTTSGraph(apiKey: string, voiceId?: string) {
   const ttsNode = new RemoteTTSNode({
     id: nodeId,
     speakerId: voiceId || 'default', // Use user's voice ID or default
-    modelId: 'inworld-tts-1', // Default TTS model
+    modelId: 'inworld-tts-1.5-max', // Default TTS model
     sampleRate: 22050,
     temperature: 0.8,
     speakingRate: 1.0,
@@ -986,7 +986,7 @@ async function createVoiceAgentGraph(
   const ttsNode = new RemoteTTSNode({
     id: `tts-node${postfix}`,
     speakerId: voiceId || 'default',
-    modelId: 'inworld-tts-1',
+    modelId: 'inworld-tts-1.5-max',
     sampleRate: 22050,
     temperature: 0.8,
     speakingRate: 1,
