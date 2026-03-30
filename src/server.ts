@@ -17,7 +17,6 @@ import {
   CustomNode,
   ProcessContext,
 } from '@inworld/runtime/graph';
-import { renderJinja } from '@inworld/runtime/primitives/llm';
 import { stopInworldRuntime } from '@inworld/runtime';
 
 const app = express();
@@ -94,9 +93,7 @@ class TTSProcessingNode extends CustomNode {
     _context: ProcessContext,
     input: { text: string }
   ): Promise<GraphTypes.LLMChatRequest> {
-    const renderedPrompt = await renderJinja(ttsPrompt, {
-      userText: input.text,
-    });
+    const renderedPrompt = ttsPrompt.replace('{{ userText }}', input.text);
     
     return new GraphTypes.LLMChatRequest({
       messages: [
@@ -120,11 +117,12 @@ function createTTSGraph(apiKey: string, voiceId?: string) {
   
   const ttsNode = new RemoteTTSNode({
     id: nodeId,
-    speakerId: voiceId || 'default', // Use user's voice ID or default
-    modelId: 'inworld-tts-1.5-max', // Default TTS model
-    sampleRate: 22050,
-    temperature: 0.8,
-    speakingRate: 1.0,
+    voice: { id: voiceId || 'default' },
+    synthesisConfig: {
+      modelId: 'inworld-tts-1.5-max',
+      postprocessing: { sampleRate: 22050 },
+      inference: { temperature: 0.8, speakingRate: 1.0 },
+    },
   });
 
   const graph = new GraphBuilder({ 
@@ -554,7 +552,7 @@ app.post('/memory-chat', async (req, res) => {
     for await (const result of outputStream) {
       result.processResponse({
         Content: (content: GraphTypes.Content) => {
-          response = content.content;
+          response = content.content || '';
         },
         default: (data: any) => {
           console.error('Unprocessed validation response:', data);
@@ -985,11 +983,12 @@ async function createVoiceAgentGraph(
 
   const ttsNode = new RemoteTTSNode({
     id: `tts-node${postfix}`,
-    speakerId: voiceId || 'default',
-    modelId: 'inworld-tts-1.5-max',
-    sampleRate: 22050,
-    temperature: 0.8,
-    speakingRate: 1,
+    voice: { id: voiceId || 'default' },
+    synthesisConfig: {
+      modelId: 'inworld-tts-1.5-max',
+      postprocessing: { sampleRate: 22050 },
+      inference: { temperature: 0.8, speakingRate: 1 },
+    },
   });
 
   const graphBuilder = new GraphBuilder({
